@@ -4,9 +4,18 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.access.managementsystempos.data.PreferenceKey
+import org.access.managementsystempos.data.PreferenceKeys
+import org.access.managementsystempos.data.readDataStore
 import org.access.managementsystempos.features.login.LoginScreen
 import org.access.managementsystempos.features.login.LoginScreenDestination
 import org.access.managementsystempos.features.main.MainScreen
@@ -21,10 +30,20 @@ interface ScreenDestination
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    var startDestination: ScreenDestination by remember { mutableStateOf(LoginScreenDestination) }
+
+    LaunchedEffect(Unit) {
+        val loginToken = context.readDataStore(PreferenceKeys[PreferenceKey.LOGIN_TOKEN]!!)
+
+        if (!loginToken.isNullOrEmpty()) {
+            startDestination = MainScreenDestination
+        }
+    }
 
     NavHost(
         navController = navController,
-        startDestination = MainScreenDestination
+        startDestination = startDestination
     ) {
         composable<MainScreenDestination>(
             enterTransition = {
@@ -55,7 +74,7 @@ fun Navigation() {
                 )
             }
         ) {
-            LoginScreen()
+            LoginScreen(navController)
         }
         composable<POSScreenDestination>(
             enterTransition = {
