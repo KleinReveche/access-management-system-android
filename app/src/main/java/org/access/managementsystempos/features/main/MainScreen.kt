@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import kotlinx.serialization.Serializable
 import org.access.managementsystempos.features.login.LoginScreenDestination
+import org.access.managementsystempos.features.pos.POSScreenDestination
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -22,3 +23,4 @@ fun MainScreen(navController: NavController) {
 
 @Serializable
 object MainScreenDestination
+object MainScreenDestination : ScreenDestination

@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kotlinx.serialization.Serializable
+import org.access.managementsystempos.features.navigation.ScreenDestination
 
 @Composable
 fun POSScreen() {
@@ -23,4 +24,4 @@ fun POSScreen() {
 }
 
 @Serializable
-object POSScreenDestination
+object POSScreenDestination : ScreenDestination

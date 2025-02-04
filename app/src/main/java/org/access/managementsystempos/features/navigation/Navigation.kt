@@ -16,6 +16,8 @@ import org.access.managementsystempos.features.pos.POSScreenDestination
 import org.access.managementsystempos.features.settings.SettingsDestination
 import org.access.managementsystempos.features.settings.SettingsScreen
 
+interface ScreenDestination
+
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
