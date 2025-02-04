@@ -13,6 +13,8 @@ import org.access.managementsystempos.features.main.MainScreen
 import org.access.managementsystempos.features.main.MainScreenDestination
 import org.access.managementsystempos.features.pos.POSScreen
 import org.access.managementsystempos.features.pos.POSScreenDestination
+import org.access.managementsystempos.features.settings.SettingsDestination
+import org.access.managementsystempos.features.settings.SettingsScreen
 
 @Composable
 fun Navigation() {
@@ -67,6 +69,22 @@ fun Navigation() {
             }
         ) {
             POSScreen()
+        }
+        composable<SettingsDestination>(
+
+            enterTransition = {
+                return@composable fadeIn(tween(1000))
+            }, exitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popEnterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        ) {
+            SettingsScreen()
         }
     }
 }
