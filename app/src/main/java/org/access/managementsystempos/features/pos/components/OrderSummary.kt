@@ -38,7 +38,13 @@ fun OrderSummary(cart: Map<Product, Int>) {
                     modifier = Modifier.size(60.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("${product.name} ${product.price} x $quantity - ${cart[product]?.times(quantity)} PHP")
+                Text(
+                    "${product.name}- ₱${product.price} x $quantity - ${
+                        product.price.times(
+                            quantity
+                        )
+                    } PHP"
+                )
             }
             Spacer(modifier = Modifier.height(8.dp))
         }

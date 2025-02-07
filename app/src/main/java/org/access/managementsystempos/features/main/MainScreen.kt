@@ -21,6 +21,7 @@ import kotlinx.serialization.Serializable
 import org.access.managementsystempos.data.PreferenceKey
 import org.access.managementsystempos.data.PreferenceKeys
 import org.access.managementsystempos.data.readDataStore
+import org.access.managementsystempos.features.kitchen.KitchenDestination
 import org.access.managementsystempos.features.login.LoginScreenDestination
 import org.access.managementsystempos.features.navigation.ScreenDestination
 import org.access.managementsystempos.features.pos.POSScreenDestination
@@ -54,6 +55,11 @@ fun MainScreen(navController: NavController) {
                 navController.navigate(POSScreenDestination)
             }) {
                 Text("Go to POS Screen")
+            }
+            Button(onClick = {
+                navController.navigate(KitchenDestination)
+            }) {
+                Text("Go to Kitchen Screen")
             }
             Button(onClick = { vm.onLogout(context) { navController.navigate(LoginScreenDestination) } }) {
                 Text("Logout")

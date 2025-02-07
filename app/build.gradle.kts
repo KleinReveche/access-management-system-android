@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.datastore)
+    implementation(libs.androidx.navigation)
+
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)

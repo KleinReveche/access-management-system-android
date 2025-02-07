@@ -11,7 +11,7 @@ object SampleData {
     private val riceMeal = ProductCategory("Rice Meal", all)
 
     val categories = arrayOf(
-        streetFood, drinks, riceMeal
+        all, streetFood, drinks, riceMeal
     )
 
     private val kwekKwek = Product("Kwek-Kwek", 25.0f, streetFood, R.drawable.kwek_kwek)

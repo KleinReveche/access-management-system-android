@@ -16,6 +16,8 @@ import androidx.navigation.compose.rememberNavController
 import org.access.managementsystempos.data.PreferenceKey
 import org.access.managementsystempos.data.PreferenceKeys
 import org.access.managementsystempos.data.readDataStore
+import org.access.managementsystempos.features.kitchen.KitchenDestination
+import org.access.managementsystempos.features.kitchen.KitchenScreen
 import org.access.managementsystempos.features.login.LoginScreen
 import org.access.managementsystempos.features.login.LoginScreenDestination
 import org.access.managementsystempos.features.main.MainScreen
@@ -106,6 +108,22 @@ fun Navigation() {
             }
         ) {
             SettingsScreen()
+        }
+        composable<KitchenDestination>(
+
+            enterTransition = {
+                return@composable fadeIn(tween(1000))
+            }, exitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popEnterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        ) {
+            KitchenScreen()
         }
     }
 }
