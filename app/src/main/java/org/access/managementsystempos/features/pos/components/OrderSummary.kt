@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +22,6 @@ fun OrderSummary(cart: Map<Product, Int>) {
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
-        Text("Order Summary", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(8.dp))
 
         cart.forEach { (product, quantity) ->
@@ -40,9 +38,7 @@ fun OrderSummary(cart: Map<Product, Int>) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "${product.name}- ₱${product.price} x $quantity - ${
-                        product.price.times(
-                            quantity
-                        )
+                        product.price.times(quantity)
                     } PHP"
                 )
             }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -24,6 +25,7 @@ import org.access.managementsystempos.features.main.MainScreen
 import org.access.managementsystempos.features.main.MainScreenDestination
 import org.access.managementsystempos.features.pos.POSScreen
 import org.access.managementsystempos.features.pos.POSScreenDestination
+import org.access.managementsystempos.features.pos.SharedViewModel
 import org.access.managementsystempos.features.settings.SettingsDestination
 import org.access.managementsystempos.features.settings.SettingsScreen
 
@@ -34,6 +36,7 @@ fun Navigation() {
     val navController = rememberNavController()
     val context = LocalContext.current
     var startDestination: ScreenDestination by remember { mutableStateOf(LoginScreenDestination) }
+    val sharedViewModel: SharedViewModel = viewModel()
 
     LaunchedEffect(Unit) {
         val loginToken = context.readDataStore(PreferenceKeys[PreferenceKey.LOGIN_TOKEN]!!)
@@ -91,7 +94,7 @@ fun Navigation() {
                 )
             }
         ) {
-            POSScreen()
+            POSScreen(sharedViewModel = sharedViewModel)
         }
         composable<SettingsDestination>(
 
@@ -123,7 +126,7 @@ fun Navigation() {
                 )
             }
         ) {
-            KitchenScreen()
+            KitchenScreen(sharedViewModel = sharedViewModel)
         }
     }
 }

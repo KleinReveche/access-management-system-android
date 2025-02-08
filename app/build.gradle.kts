@@ -59,6 +59,7 @@ dependencies {
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.compose.material3)
 
     testImplementation(libs.junit)
 
