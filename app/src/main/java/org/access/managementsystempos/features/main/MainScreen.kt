@@ -1,44 +1,40 @@
 package org.access.managementsystempos.features.main
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import org.access.managementsystempos.R
 import org.access.managementsystempos.features.kitchen.KitchenDestination
+import org.access.managementsystempos.features.login.LoginScreenDestination
 import org.access.managementsystempos.features.navigation.ScreenDestination
 import org.access.managementsystempos.features.pos.POSScreenDestination
 import org.koin.androidx.compose.koinViewModel
@@ -48,111 +44,147 @@ import org.koin.androidx.compose.koinViewModel
 fun MainScreen(navController: NavController) {
     val vm: MainScreenViewModel = koinViewModel()
 
-    val listState = rememberLazyListState()
     val screens = listOf(
-        "Go to POS Screen" to POSScreenDestination,
-        "Go to Kitchen Screen" to KitchenDestination
+        Triple("Profile", R.drawable.ic_profile, 0),
+        Triple("Home", R.drawable.ic_home, 1),
+        Triple("Settings", R.drawable.ic_settings, 2)
     )
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val coroutineScope = rememberCoroutineScope()
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(250.dp)
-                    .background(Color.Gray)
-            ) {
-                DrawerContent(navController, vm) {
-                    coroutineScope.launch { drawerState.close() }
-                }
-            }
-        },
-        gesturesEnabled = true,
-        scrimColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-    ) {
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Access™") },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
-                    navigationIcon = {
-                        IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
-                        }
-                    }
+                    title = { Text("Access™", color = MaterialTheme.colorScheme.onPrimary) },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
                 )
+            },
+            bottomBar = {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ) {
+                    screens.forEach { (label, iconRes, index) ->
+                        NavigationBarItem(
+                            selected = vm.selectedItem == index,
+                            onClick = { vm.selectedItem = index },
+                            icon = {
+                                Image(
+                                    painter = painterResource(id = iconRes),
+                                    contentDescription = label
+                                )
+                            },
+                            label = { Text(label, color = MaterialTheme.colorScheme.onPrimary) }
+                        )
+                    }
+                }
             }
         ) { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(paddingValues)
                     .padding(16.dp)
             ) {
-                Text("Hello World!")
-                Text("Login Token: ${vm.loginToken}")
-                Text("Cashier Name: ${vm.cashierName}")
-                Text("Login Time: ${vm.loginTime}")
+                when (vm.selectedItem) {
+                    0 -> ProfileScreen(
+                        navController,
+                        vm,
+                        vm.loginToken,
+                        vm.cashierName,
+                        vm.loginTime.toString()
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                LazyRow(
-                    state = listState,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(Int.MAX_VALUE) { index ->
-                        val (text, destination) = screens[index % screens.size]
-                        ElevatedCardButton(text) {
-                            navController.navigate(destination)
-                        }
-                    }
+                    1 -> HomeScreen(navController)
+                    2 -> SettingsScreen()
                 }
+            }
+        }
+}
+
+@Composable
+fun ProfileScreen(
+    navController: NavController,
+    vm: MainScreenViewModel,
+    loginToken: String,
+    cashierName: String,
+    loginTime: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text("Login Token: $loginToken", color = MaterialTheme.colorScheme.primary)
+        Text("Cashier Name: $cashierName", color = MaterialTheme.colorScheme.primary)
+        Text("Login Time: $loginTime", color = MaterialTheme.colorScheme.primary)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ElevatedButton(
+            onClick = {
+                vm.onLogout {
+                    navController.navigate(LoginScreenDestination)
+                }
+            },
+            colors = ButtonDefaults.elevatedButtonColors(containerColor = MaterialTheme.colorScheme.onPrimary)  // ✅ Apply Theme Color
+        ) {
+            Text("Logout", color = MaterialTheme.colorScheme.onPrimary)
+        }
+    }
+}
+
+@Composable
+fun HomeScreen(navController: NavController) {
+    val screens = listOf(
+        Triple("POS", POSScreenDestination, R.drawable.ic_pos),
+        Triple("Kitchen", KitchenDestination, R.drawable.ic_kitchen)
+    )
+
+    LazyRow(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(screens.size) { index ->
+            val (text, destination, iconRes) = screens[index]
+            ElevatedCardButton(text, iconRes) {
+                navController.navigate(destination)
             }
         }
     }
 }
 
 @Composable
-fun DrawerContent(
-    navController: NavController,
-    vm: MainScreenViewModel,
-    onClose: () -> Unit
-) {
+fun SettingsScreen() {
     Column(
         modifier = Modifier
-            .fillMaxHeight()
-            .width(250.dp)
+            .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Profile", modifier = Modifier
-            .padding(8.dp)
-            .clickable { onClose() })
-        Text("Settings", modifier = Modifier
-            .padding(8.dp)
-            .clickable { onClose() })
-        Text("Logout", modifier = Modifier
-            .padding(8.dp)
-            .clickable {
-                vm.onLogout { navController.navigate(org.access.managementsystempos.features.login.LoginScreenDestination) }
-                onClose()
-            })
+        Text("Settings Screen (Coming Soon)", color = MaterialTheme.colorScheme.primary)
     }
 }
 
 @Composable
-fun ElevatedCardButton(text: String, onClick: () -> Unit) {
+fun ElevatedCardButton(text: String, iconRes: Int, onClick: () -> Unit) {
     ElevatedCard(
         modifier = Modifier
             .width(150.dp)
             .padding(8.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
+        shape = MaterialTheme.shapes.large, // ✅ Apply Theme Shape
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp),
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)  // ✅ Apply Theme Color
     ) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            Text(text)
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = text
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text, color = MaterialTheme.colorScheme.onPrimary)  // ✅ Apply Theme Color
         }
     }
 }

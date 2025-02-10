@@ -1,6 +1,7 @@
 package org.access.managementsystempos.features.main
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,7 @@ import org.access.managementsystempos.domain.models.db.Preference
 import org.access.managementsystempos.domain.repository.LocalRepository
 import org.access.managementsystempos.domain.repository.RemoteRepository
 
+
 class MainScreenViewModel(
     private val remoteRepository: RemoteRepository,
     private val localRepository: LocalRepository
@@ -24,6 +26,7 @@ class MainScreenViewModel(
     var cashierName by mutableStateOf("")
     var loginTime by mutableStateOf(Clock.System.now())
     var role by mutableStateOf("")
+    var selectedItem by mutableIntStateOf(0)
 
     init {
         viewModelScope.launch {
