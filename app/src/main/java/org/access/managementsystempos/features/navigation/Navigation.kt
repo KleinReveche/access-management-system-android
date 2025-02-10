@@ -93,8 +93,8 @@ fun Navigation() {
                     AnimatedContentTransitionScope.SlideDirection.End, tween(700)
                 )
             }
-        ) {
-            POSScreen(sharedViewModel = sharedViewModel)
+        ) { _ ->
+            POSScreen(sharedViewModel = sharedViewModel, navController = navController)
         }
         composable<SettingsDestination>(
 
