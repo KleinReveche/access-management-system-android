@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -40,12 +41,13 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -56,10 +58,36 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.navigation)
 
+    // coroutines
+    implementation(libs.kotlinx.coroutines.core)
+
+    // ktor
+    implementation(platform(libs.ktor.bom))
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+
+    // lifecycle
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // Koin for Android
+    implementation(libs.koin.androidx.compose)
+
+    //Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.compose.material3)
 
     testImplementation(libs.junit)
 
@@ -70,4 +98,8 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

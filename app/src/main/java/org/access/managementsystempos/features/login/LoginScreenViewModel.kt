@@ -1,43 +1,68 @@
 package org.access.managementsystempos.features.login
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import org.access.managementsystempos.data.PreferenceKey
-import org.access.managementsystempos.data.PreferenceKeys
-import org.access.managementsystempos.data.dataStore
+import org.access.managementsystempos.domain.models.PreferenceKey
+import org.access.managementsystempos.domain.models.ResponseType
+import org.access.managementsystempos.domain.models.db.Preference
+import org.access.managementsystempos.domain.repository.LocalRepository
+import org.access.managementsystempos.domain.repository.RemoteRepository
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-class LoginScreenViewModel : ViewModel() {
+class LoginScreenViewModel(
+    private val remoteRepository: RemoteRepository,
+    private val localRepository: LocalRepository
+) : ViewModel() {
     var username by mutableStateOf("")
     var password by mutableStateOf("")
     var passwordVisible by mutableStateOf(false)
 
+    var loggingIn by mutableStateOf(false)
+    var loginError by mutableStateOf(false)
+    var loginErrorMessage by mutableStateOf("")
+
     @OptIn(ExperimentalUuidApi::class)
-    fun login(context: Context, onLoginSuccess: () -> Unit) {
+    fun login(onLoginSuccess: () -> Unit, onLoginFailure: () -> Unit) {
         if (username.isEmpty() || password.isEmpty()) return
+        loginErrorMessage = ""
 
-        // TODO: Implement login logic, temporary for now
+        viewModelScope.launch {
+            val login = remoteRepository.login(username, password)
 
-        if (username == "admin" && password == "admin") {
-            val loginToken = Uuid.random().toString()
-            val loginTime = Clock.System.now().toString()
+            when (login.responseType) {
+                ResponseType.SUCCESS -> {
+                    localRepository.savePreference(
+                        Preference(
+                            PreferenceKey.LOGIN_TOKEN.name,
+                            login.message
+                        )
+                    )
+                    localRepository.savePreference(
+                        Preference(
+                            PreferenceKey.LOGIN_TIME.name,
+                            Clock.System.now().toString()
+                        )
+                    )
+                    localRepository.savePreference(
+                        Preference(
+                            PreferenceKey.CASHIER_NAME.name,
+                            username
+                        )
+                    )
 
-            viewModelScope.launch {
-                context.dataStore.edit { preferences ->
-                    preferences[PreferenceKeys[PreferenceKey.LOGIN_TOKEN]!!] = loginToken
-                    preferences[PreferenceKeys[PreferenceKey.LOGIN_TIME]!!] = loginTime
-                    preferences[PreferenceKeys[PreferenceKey.CASHIER_NAME]!!] = username
+                    onLoginSuccess()
                 }
 
-                onLoginSuccess()
+                ResponseType.ERROR -> {
+                    loginErrorMessage = login.message
+                    loginError = true
+                    onLoginFailure()
+                }
             }
         }
     }

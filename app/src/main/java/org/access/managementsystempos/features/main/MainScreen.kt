@@ -1,6 +1,5 @@
 package org.access.managementsystempos.features.main
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,43 +29,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.access.managementsystempos.data.PreferenceKey
-import org.access.managementsystempos.data.PreferenceKeys
-import org.access.managementsystempos.data.readDataStore
 import org.access.managementsystempos.features.kitchen.KitchenDestination
 import org.access.managementsystempos.features.navigation.ScreenDestination
 import org.access.managementsystempos.features.pos.POSScreenDestination
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavController) {
-    val vm: MainScreenViewModel = viewModel { MainScreenViewModel() }
-
-    val context = LocalContext.current
-    var loginToken by remember { mutableStateOf("") }
-    var cashierName by remember { mutableStateOf("") }
-    var loginTime by remember { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        loginToken = context.readDataStore(PreferenceKeys[PreferenceKey.LOGIN_TOKEN]!!)!!
-        cashierName = context.readDataStore(PreferenceKeys[PreferenceKey.CASHIER_NAME]!!)!!
-        loginTime = context.readDataStore(PreferenceKeys[PreferenceKey.LOGIN_TIME]!!)!!
-    }
+    val vm: MainScreenViewModel = koinViewModel()
 
     val listState = rememberLazyListState()
     val screens = listOf(
@@ -85,7 +65,7 @@ fun MainScreen(navController: NavController) {
                     .width(250.dp)
                     .background(Color.Gray)
             ) {
-                DrawerContent(navController, vm, context) {
+                DrawerContent(navController, vm) {
                     coroutineScope.launch { drawerState.close() }
                 }
             }
@@ -113,9 +93,9 @@ fun MainScreen(navController: NavController) {
                     .padding(16.dp)
             ) {
                 Text("Hello World!")
-                Text("Login Token: $loginToken")
-                Text("Cashier Name: $cashierName")
-                Text("Login Time: $loginTime")
+                Text("Login Token: ${vm.loginToken}")
+                Text("Cashier Name: ${vm.cashierName}")
+                Text("Login Time: ${vm.loginTime}")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -139,7 +119,6 @@ fun MainScreen(navController: NavController) {
 fun DrawerContent(
     navController: NavController,
     vm: MainScreenViewModel,
-    context: Context,
     onClose: () -> Unit
 ) {
     Column(
@@ -157,7 +136,7 @@ fun DrawerContent(
         Text("Logout", modifier = Modifier
             .padding(8.dp)
             .clickable {
-                vm.onLogout(context) { navController.navigate(org.access.managementsystempos.features.login.LoginScreenDestination) }
+                vm.onLogout { navController.navigate(org.access.managementsystempos.features.login.LoginScreenDestination) }
                 onClose()
             })
     }
@@ -186,4 +165,3 @@ object MainScreenDestination : ScreenDestination
 fun MainScreenPreview() {
     MainScreen(NavController(LocalContext.current))
 }
-

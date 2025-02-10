@@ -16,25 +16,33 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
+import org.access.managementsystempos.features.common.components.ErrorDialog
 import org.access.managementsystempos.features.common.icons.Visibility
 import org.access.managementsystempos.features.common.icons.VisibilityOff
 import org.access.managementsystempos.features.main.MainScreenDestination
 import org.access.managementsystempos.features.navigation.ScreenDestination
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    val vm: LoginScreenViewModel = viewModel { LoginScreenViewModel() }
-    val context = LocalContext.current
+    val vm: LoginScreenViewModel = koinViewModel()
 
     Scaffold { paddingValues ->
+        if (vm.loginError) {
+            ErrorDialog(
+                onDismissRequest = { vm.loginError = false },
+                onConfirmation = { vm.loginError = false },
+                vm.loginErrorMessage
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -52,6 +60,8 @@ fun LoginScreen(navController: NavController) {
                 value = vm.username,
                 onValueChange = { vm.username = it },
                 label = { Text("Username") },
+                enabled = !vm.loggingIn,
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -61,6 +71,7 @@ fun LoginScreen(navController: NavController) {
                 value = vm.password,
                 onValueChange = { vm.password = it },
                 label = { Text("Password") },
+                enabled = !vm.loggingIn,
                 visualTransformation = if (vm.passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     val image = if (vm.passwordVisible) VisibilityOff else Visibility
@@ -68,13 +79,27 @@ fun LoginScreen(navController: NavController) {
                         Icon(imageVector = image, contentDescription = null)
                     }
                 },
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { vm.login(context) { navController.navigate(MainScreenDestination) } },
+                onClick = {
+                    vm.loggingIn = true
+                    vm.login(
+                        onLoginSuccess = {
+                            vm.loggingIn = false
+                            navController.navigate(MainScreenDestination)
+                        },
+                        onLoginFailure = {
+                            vm.loggingIn = false
+                            vm.loginError = true
+                        }
+                    )
+                },
+                enabled = !vm.loggingIn,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Login")
@@ -89,5 +114,5 @@ object LoginScreenDestination : ScreenDestination
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(navController = NavController(LocalContext.current))
+    LoginScreen(navController = rememberNavController())
 }

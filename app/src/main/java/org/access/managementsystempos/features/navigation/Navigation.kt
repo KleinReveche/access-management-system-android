@@ -4,19 +4,17 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.access.managementsystempos.data.PreferenceKey
-import org.access.managementsystempos.data.PreferenceKeys
-import org.access.managementsystempos.data.readDataStore
+import kotlinx.coroutines.runBlocking
+import org.access.managementsystempos.domain.models.PreferenceKey
+import org.access.managementsystempos.domain.repository.LocalRepository
 import org.access.managementsystempos.features.kitchen.KitchenDestination
 import org.access.managementsystempos.features.kitchen.KitchenScreen
 import org.access.managementsystempos.features.login.LoginScreen
@@ -28,18 +26,19 @@ import org.access.managementsystempos.features.pos.POSScreenDestination
 import org.access.managementsystempos.features.pos.SharedViewModel
 import org.access.managementsystempos.features.settings.SettingsDestination
 import org.access.managementsystempos.features.settings.SettingsScreen
+import org.koin.compose.koinInject
 
 interface ScreenDestination
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    val context = LocalContext.current
+    val localRepository: LocalRepository = koinInject()
     var startDestination: ScreenDestination by remember { mutableStateOf(LoginScreenDestination) }
     val sharedViewModel: SharedViewModel = viewModel()
 
-    LaunchedEffect(Unit) {
-        val loginToken = context.readDataStore(PreferenceKeys[PreferenceKey.LOGIN_TOKEN]!!)
+    runBlocking {
+        val loginToken = localRepository.getPreference(PreferenceKey.LOGIN_TOKEN)?.value
 
         if (!loginToken.isNullOrEmpty()) {
             startDestination = MainScreenDestination
