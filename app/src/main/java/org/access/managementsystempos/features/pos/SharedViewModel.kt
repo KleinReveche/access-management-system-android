@@ -14,6 +14,9 @@ class SharedViewModel : ViewModel() {
     private val _orders = mutableStateMapOf<String, Order>()
     val orders: Map<String, Order> get() = _orders
 
+    private val _completedOrders = mutableStateMapOf<String, Order>()
+    val completedOrders: Map<String, Order> get() = _completedOrders
+
     private val timers = mutableMapOf<String, Job>()
     private var orderCounter = 1
 
@@ -44,8 +47,9 @@ class SharedViewModel : ViewModel() {
 
     fun markOrderCompleted(orderId: String) {
         _orders[orderId]?.let { order ->
-            _orders[orderId] = order.copy(isCompleted = true)
-            stopTimerForOrder(orderId)
+            val completedOrder = order.copy(isCompleted = true)
+            _completedOrders[orderId] = completedOrder
+            removeOrder(orderId)
         }
     }
 

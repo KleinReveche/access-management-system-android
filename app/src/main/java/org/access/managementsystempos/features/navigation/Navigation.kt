@@ -24,6 +24,8 @@ import org.access.managementsystempos.features.main.MainScreenDestination
 import org.access.managementsystempos.features.pos.POSScreen
 import org.access.managementsystempos.features.pos.POSScreenDestination
 import org.access.managementsystempos.features.pos.SharedViewModel
+import org.access.managementsystempos.features.sales.SalesDestination
+import org.access.managementsystempos.features.sales.SalesScreen
 import org.access.managementsystempos.features.settings.SettingsDestination
 import org.access.managementsystempos.features.settings.SettingsScreen
 import org.koin.compose.koinInject
@@ -125,6 +127,29 @@ fun Navigation() {
             }
         ) {
             KitchenScreen(sharedViewModel = sharedViewModel, navController = navController)
+        }
+
+        composable<SalesDestination>(
+            enterTransition = {
+                return@composable fadeIn(tween(1000))
+            },
+            exitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            },
+            popEnterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        ) { navBackStackEntry ->
+            val cashierName = "John Doe" // Replace with actual cashier name retrieval logic
+            SalesScreen(
+                navController = navController,
+                sharedViewModel = sharedViewModel,
+                cashierName = cashierName
+            )
         }
     }
 }

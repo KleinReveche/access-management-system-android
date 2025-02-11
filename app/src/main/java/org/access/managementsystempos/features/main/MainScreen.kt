@@ -96,8 +96,8 @@ fun MainScreen(navController: NavController) {
                         vm.loginTime.toString()
                     )
 
-                    1 -> HomeScreen(navController)
-                    2 -> SettingsScreen()
+                    1 -> HomeScreen(navController, vm.cashierName)
+                    2 -> SettingsScreen(navController)
                 }
             }
         }
