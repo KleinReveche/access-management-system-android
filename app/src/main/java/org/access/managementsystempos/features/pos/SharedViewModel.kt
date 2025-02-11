@@ -44,7 +44,7 @@ class SharedViewModel : ViewModel() {
 
     fun markOrderCompleted(orderId: String) {
         _orders[orderId]?.let { order ->
-            _orders[orderId] = order.copy(isCompleted = true, elapsedTime = 0)
+            _orders[orderId] = order.copy(isCompleted = true)
             stopTimerForOrder(orderId)
         }
     }

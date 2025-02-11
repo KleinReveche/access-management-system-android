@@ -14,7 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,22 +27,24 @@ import org.access.managementsystempos.domain.models.Order
 fun KitchenOrderItem(
     order: Order,
     onOrderCompleted: (Order) -> Unit,
-    onClearOrder: () -> Unit
+    onClearOrder: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    var elapsedTime by remember { mutableIntStateOf(order.elapsedTime) }
 
-    var elapsedTime by remember { mutableStateOf(order.elapsedTime) }
-
-    LaunchedEffect(order.isCompleted) {
-        if (!order.isCompleted) {
-            while (true) {
-                delay(1000L)
-                elapsedTime += 1
-            }
+    LaunchedEffect(order.id, order.isCompleted) {
+        while (!order.isCompleted) {
+            delay(1000L)
+            elapsedTime += 1
         }
     }
 
+    val totalPrice = order.items.entries.sumOf { (product, quantity) ->
+        product.price.toDouble() * quantity
+    }
+
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
@@ -54,6 +56,7 @@ fun KitchenOrderItem(
             }
             Text("Items: $itemsText")
 
+            Text("Total Price: ₱${"%,.2f".format(totalPrice)}")
             Text("Elapsed Time: ${String.format("%02d:%02d", elapsedTime / 60, elapsedTime % 60)}")
         }
 

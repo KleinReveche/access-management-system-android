@@ -67,7 +67,7 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Access™ Menu") },
+                title = { Text("Access™ Menu", color = MaterialTheme.colorScheme.onPrimary) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -203,10 +203,11 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
                         onClick = {
                             val order = Order(
                                 id = "ORD-${System.currentTimeMillis()}",
-                                items = vm.cart,
+                                items = vm.cart.toMap(),
                                 elapsedTime = 0
                             )
                             sharedViewModel.addOrder(order)
+                            vm.clearCart()
                             showBottomSheet = false
                         },
                         modifier = Modifier.fillMaxWidth()

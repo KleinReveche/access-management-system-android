@@ -112,7 +112,6 @@ fun Navigation() {
             SettingsScreen()
         }
         composable<KitchenDestination>(
-
             enterTransition = {
                 return@composable fadeIn(tween(1000))
             }, exitTransition = {
@@ -125,7 +124,7 @@ fun Navigation() {
                 )
             }
         ) {
-            KitchenScreen(sharedViewModel = sharedViewModel)
+            KitchenScreen(sharedViewModel = sharedViewModel, navController = navController)
         }
     }
 }
