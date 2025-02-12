@@ -21,10 +21,9 @@ class SharedViewModel : ViewModel() {
     private var orderCounter = 1
 
     fun addOrder(order: Order) {
-        val orderId = "ORD-${orderCounter++}"
-        val newOrder = order.copy(id = orderId)
-        _orders[orderId] = newOrder
-        startTimerForOrder(orderId)
+        val newOrder = order.copy(id = Order.generateOrderId())
+        _orders[newOrder.id] = newOrder
+        startTimerForOrder(newOrder.id)
     }
 
     private fun startTimerForOrder(orderId: String) {

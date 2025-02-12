@@ -35,6 +35,9 @@ fun KitchenScreen(
     navController: NavController
 ) {
     val sharedViewModel: SharedViewModel = koinViewModel()
+    val ordersList =
+        sharedViewModel.orders.values.toList() // Convert Map<String, Order> to List<Order>
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -60,7 +63,7 @@ fun KitchenScreen(
                 .padding(paddingValues)
         ) {
             LazyColumn(modifier = Modifier.padding(16.dp)) {
-                items(sharedViewModel.orders.values.toList()) { order ->
+                items(ordersList) { order -> // Corrected reference to order list
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -70,7 +73,7 @@ fun KitchenScreen(
                     ) {
                         KitchenOrderItem(
                             order = order,
-                            onOrderCompleted = { sharedViewModel.markOrderCompleted(order.id) },
+                            onOrderCompleted = { sharedViewModel.markOrderCompleted(order.id) }, // Correct ID usage
                             onClearOrder = { sharedViewModel.removeOrder(order.id) },
                             modifier = Modifier.padding(16.dp)
                         )
