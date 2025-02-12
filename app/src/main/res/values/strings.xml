@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AMS</string>
+    <string name="point_of_sale">Point of Sale</string>
+    <string name="all">All</string>
 </resources>

@@ -21,5 +21,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "access-management-system-web"
+rootProject.name = "access-management-system-android"
 include(":app")

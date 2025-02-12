@@ -4,48 +4,27 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.runBlocking
-import org.access.managementsystempos.domain.models.PreferenceKey
-import org.access.managementsystempos.domain.repository.LocalRepository
-import org.access.managementsystempos.features.kitchen.KitchenDestination
 import org.access.managementsystempos.features.kitchen.KitchenScreen
+import org.access.managementsystempos.features.kitchen.KitchenScreenDestination
 import org.access.managementsystempos.features.login.LoginScreen
 import org.access.managementsystempos.features.login.LoginScreenDestination
 import org.access.managementsystempos.features.main.MainScreen
 import org.access.managementsystempos.features.main.MainScreenDestination
 import org.access.managementsystempos.features.pos.POSScreen
 import org.access.managementsystempos.features.pos.POSScreenDestination
-import org.access.managementsystempos.features.pos.SharedViewModel
-import org.access.managementsystempos.features.sales.SalesDestination
 import org.access.managementsystempos.features.sales.SalesScreen
+import org.access.managementsystempos.features.sales.SalesScreenDestination
 import org.access.managementsystempos.features.settings.SettingsDestination
 import org.access.managementsystempos.features.settings.SettingsScreen
-import org.koin.compose.koinInject
 
 interface ScreenDestination
 
 @Composable
-fun Navigation() {
+fun Navigation(startDestination: ScreenDestination) {
     val navController = rememberNavController()
-    val localRepository: LocalRepository = koinInject()
-    var startDestination: ScreenDestination by remember { mutableStateOf(LoginScreenDestination) }
-    val sharedViewModel: SharedViewModel = viewModel()
-
-    runBlocking {
-        val loginToken = localRepository.getPreference(PreferenceKey.LOGIN_TOKEN)?.value
-
-        if (!loginToken.isNullOrEmpty()) {
-            startDestination = MainScreenDestination
-        }
-    }
 
     NavHost(
         navController = navController,
@@ -95,7 +74,7 @@ fun Navigation() {
                 )
             }
         ) { _ ->
-            POSScreen(sharedViewModel = sharedViewModel, navController = navController)
+            POSScreen(navController = navController)
         }
         composable<SettingsDestination>(
 
@@ -113,7 +92,7 @@ fun Navigation() {
         ) {
             SettingsScreen()
         }
-        composable<KitchenDestination>(
+        composable<KitchenScreenDestination>(
             enterTransition = {
                 return@composable fadeIn(tween(1000))
             }, exitTransition = {
@@ -126,10 +105,10 @@ fun Navigation() {
                 )
             }
         ) {
-            KitchenScreen(sharedViewModel = sharedViewModel, navController = navController)
+            KitchenScreen(navController = navController)
         }
 
-        composable<SalesDestination>(
+        composable<SalesScreenDestination>(
             enterTransition = {
                 return@composable fadeIn(tween(1000))
             },
@@ -143,11 +122,10 @@ fun Navigation() {
                     AnimatedContentTransitionScope.SlideDirection.End, tween(700)
                 )
             }
-        ) { navBackStackEntry ->
+        ) {
             val cashierName = "John Doe" // Replace with actual cashier name retrieval logic
             SalesScreen(
                 navController = navController,
-                sharedViewModel = sharedViewModel,
                 cashierName = cashierName
             )
         }

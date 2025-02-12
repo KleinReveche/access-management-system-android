@@ -11,12 +11,19 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import org.access.managementsystempos.features.common.theme.ACCESSManagementSystemPOSTheme
 import org.access.managementsystempos.features.navigation.Navigation
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val vm: MainActivityViewModel = getViewModel()
 
         installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                vm.isLoading.value
+            }
+
             setOnExitAnimationListener { screen ->
                 val zoomX = ObjectAnimator.ofFloat(
                     screen.iconView,
@@ -46,7 +53,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ACCESSManagementSystemPOSTheme {
-                Navigation()
+                Navigation(vm.startDestination)
             }
         }
     }

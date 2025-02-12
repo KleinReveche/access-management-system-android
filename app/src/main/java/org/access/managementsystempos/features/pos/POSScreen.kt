@@ -1,9 +1,7 @@
 package org.access.managementsystempos.features.pos
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,43 +29,42 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults.centerAlignedTopAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.serialization.Serializable
 import org.access.managementsystempos.R
-import org.access.managementsystempos.data.SampleData
 import org.access.managementsystempos.domain.models.Order
 import org.access.managementsystempos.features.navigation.ScreenDestination
 import org.access.managementsystempos.features.pos.components.OrderSummary
-
+import org.access.managementsystempos.features.pos.components.ProductItem
+import org.koin.androidx.compose.koinViewModel
+import org.publicvalue.multiplatform.qrcode.CameraPosition
+import org.publicvalue.multiplatform.qrcode.CodeType
+import org.publicvalue.multiplatform.qrcode.ScannerWithPermissions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
-    val vm: POSScreenViewModel = viewModel()
-    var showBottomSheet by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf(SampleData.categories[0]) }
-    var showClearDialog by remember { mutableStateOf(false) }
-
-    val productsToShow = SampleData.food.filter { product ->
-        selectedCategory == SampleData.categories[0] || product.productCategory == selectedCategory
-    }
+fun POSScreen(navController: NavController) {
+    val vm: POSScreenViewModel = koinViewModel()
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Access™ Menu", color = MaterialTheme.colorScheme.onPrimary) },
+                title = {
+                    Text(
+                        text = "Snack Overflow",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -77,19 +74,19 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
                         )
                     }
                 },
-                colors = androidx.compose.material3.TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             )
         },
         bottomBar = {
             Button(
-                onClick = { showBottomSheet = true },
+                onClick = { vm.showBottomSheet = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Order List")
+                Text("Checkout")
             }
         }
     ) { paddingValues ->
@@ -100,10 +97,18 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
                 .padding(16.dp)
         ) {
             LazyRow {
-                items(SampleData.categories) { category ->
+                item {
                     FilterChip(
-                        selected = category == selectedCategory,
-                        onClick = { selectedCategory = category },
+                        selected = vm.selectedCategory == null,
+                        onClick = { vm.selectedCategory = null },
+                        label = { Text(stringResource(R.string.all)) },
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+                }
+                items(vm.productCategories) { category ->
+                    FilterChip(
+                        selected = category == vm.selectedCategory,
+                        onClick = { vm.selectedCategory = category },
                         label = { Text(category.name) },
                         modifier = Modifier.padding(horizontal = 4.dp)
                     )
@@ -113,7 +118,9 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = Modifier.weight(1f)) {
-                items(productsToShow) { product ->
+                items(
+                    vm.products.filter { vm.selectedCategory == null || it.categoryId == vm.selectedCategory?.id }
+                ) { product ->
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -122,50 +129,16 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
                             .clip(MaterialTheme.shapes.medium)
                             .background(MaterialTheme.colorScheme.surface)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                        ) {
-                            product.imageId?.let {
-                                Image(
-                                    painter = painterResource(id = it),
-                                    contentDescription = product.name,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(1f)
-                                )
-                            } ?: run {
-                                Image(
-                                    painter = painterResource(id = R.drawable.placeholder_image),
-                                    contentDescription = "Placeholder",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(1f)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = product.name, style = MaterialTheme.typography.bodyMedium)
-                        Text(text = "₱${product.price}", style = MaterialTheme.typography.bodySmall)
-                        Button(
-                            onClick = { vm.addToCart(product) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp)
-                        ) {
-                            Text("Add to List")
-                        }
+                        ProductItem(product) { vm.addToCart(product) }
                     }
                 }
             }
         }
     }
 
-    if (showBottomSheet) {
+    if (vm.showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false }
+            onDismissRequest = { vm.showBottomSheet = false }
         ) {
             Column(
                 modifier = Modifier
@@ -181,7 +154,7 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
                     Text("Order Summary", style = MaterialTheme.typography.headlineMedium)
 
                     IconButton(
-                        onClick = { showClearDialog = true },
+                        onClick = { vm.showClearDialog = true },
                         modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
@@ -201,14 +174,13 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
                 if (vm.cart.isNotEmpty()) {
                     Button(
                         onClick = {
-                            val order = Order(
+                            Order(
                                 id = "ORD-${System.currentTimeMillis()}",
                                 items = vm.cart.toMap(),
                                 elapsedTime = 0
                             )
-                            sharedViewModel.addOrder(order)
                             vm.clearCart()
-                            showBottomSheet = false
+                            vm.showBottomSheet = false
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -219,16 +191,16 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
         }
     }
 
-    if (showClearDialog) {
+    if (vm.showClearDialog) {
         AlertDialog(
-            onDismissRequest = { showClearDialog = false },
+            onDismissRequest = { vm.showClearDialog = false },
             title = { Text("Clear Order") },
             text = { Text("Are you sure you want to clear the order?") },
             confirmButton = {
                 IconButton(
                     onClick = {
-                        vm.clearCart()
-                        showClearDialog = false
+                        vm.showQrScanner = true
+                        vm.showClearDialog = false
                     }
                 ) {
                     Icon(
@@ -240,12 +212,24 @@ fun POSScreen(sharedViewModel: SharedViewModel, navController: NavController) {
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showClearDialog = false },
+                    onClick = { vm.showClearDialog = false },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
                 ) {
                     Text("Cancel")
                 }
             }
+        )
+    }
+
+    if (vm.showQrScanner) {
+        ScannerWithPermissions(
+            modifier = Modifier.padding(16.dp),
+            onScanned = {
+                if (vm.verifyMasterKey(it)) true
+                false
+            },
+            types = listOf(CodeType.QR),
+            cameraPosition = CameraPosition.BACK
         )
     }
 }

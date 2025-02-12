@@ -5,9 +5,9 @@ import androidx.room.RoomDatabase
 import org.access.managementsystempos.data.source.dao.PreferenceDao
 import org.access.managementsystempos.data.source.dao.ProductCategoryDao
 import org.access.managementsystempos.data.source.dao.ProductDao
-import org.access.managementsystempos.domain.models.db.Preference
-import org.access.managementsystempos.domain.models.db.Product
-import org.access.managementsystempos.domain.models.db.ProductCategory
+import org.access.managementsystempos.domain.models.Preference
+import org.access.managementsystempos.domain.models.Product
+import org.access.managementsystempos.domain.models.ProductCategory
 
 @Database(
     entities = [Preference::class, ProductCategory::class, Product::class],

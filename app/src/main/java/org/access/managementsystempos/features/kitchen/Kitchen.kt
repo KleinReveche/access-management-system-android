@@ -27,13 +27,14 @@ import org.access.managementsystempos.R
 import org.access.managementsystempos.features.kitchen.components.KitchenOrderItem
 import org.access.managementsystempos.features.navigation.ScreenDestination
 import org.access.managementsystempos.features.pos.SharedViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KitchenScreen(
-    sharedViewModel: SharedViewModel,
     navController: NavController
 ) {
+    val sharedViewModel: SharedViewModel = koinViewModel()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -81,4 +82,4 @@ fun KitchenScreen(
 }
 
 @Serializable
-object KitchenDestination : ScreenDestination
+object KitchenScreenDestination : ScreenDestination

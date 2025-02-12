@@ -1,9 +1,9 @@
 package org.access.managementsystempos.domain.repository
 
+import org.access.managementsystempos.domain.models.Preference
 import org.access.managementsystempos.domain.models.PreferenceKey
-import org.access.managementsystempos.domain.models.db.Preference
-import org.access.managementsystempos.domain.models.db.Product
-import org.access.managementsystempos.domain.models.db.ProductCategory
+import org.access.managementsystempos.domain.models.Product
+import org.access.managementsystempos.domain.models.ProductCategory
 
 interface LocalRepository {
     suspend fun getPreferences(): List<Preference>

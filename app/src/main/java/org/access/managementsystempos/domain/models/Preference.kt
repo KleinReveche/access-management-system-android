@@ -1,4 +1,4 @@
-package org.access.managementsystempos.domain.models.db
+package org.access.managementsystempos.domain.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

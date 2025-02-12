@@ -28,9 +28,9 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.access.managementsystempos.R
-import org.access.managementsystempos.features.kitchen.KitchenDestination
+import org.access.managementsystempos.features.kitchen.KitchenScreenDestination
 import org.access.managementsystempos.features.pos.POSScreenDestination
-import org.access.managementsystempos.features.sales.SalesDestination
+import org.access.managementsystempos.features.sales.SalesScreenDestination
 
 @Composable
 fun HomeScreen(navController: NavController, cashierName: String) {
@@ -40,9 +40,9 @@ fun HomeScreen(navController: NavController, cashierName: String) {
 
     val screens = listOf(
         Triple("POS", POSScreenDestination, R.drawable.ic_pos),
-        Triple("Kitchen", KitchenDestination, R.drawable.ic_kitchen),
+        Triple("Kitchen", KitchenScreenDestination, R.drawable.ic_kitchen),
         Triple("Reports", POSScreenDestination, R.drawable.ic_reports),
-        Triple("Sales", SalesDestination, R.drawable.ic_sales)
+        Triple("Sales", SalesScreenDestination, R.drawable.ic_sales)
     )
 
     Column(

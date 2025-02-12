@@ -24,15 +24,16 @@ import kotlinx.serialization.Serializable
 import org.access.managementsystempos.R
 import org.access.managementsystempos.features.navigation.ScreenDestination
 import org.access.managementsystempos.features.pos.SharedViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SalesScreen(
     navController: NavController,
-    sharedViewModel: SharedViewModel,
     cashierName: String
 ) {
+    val sharedViewModel: SharedViewModel = koinViewModel()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -47,7 +48,7 @@ fun SalesScreen(
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary // 🔹 Uses theme color
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             )
         }
@@ -84,4 +85,4 @@ fun SalesScreen(
 }
 
 @Serializable
-object SalesDestination : ScreenDestination
+object SalesScreenDestination : ScreenDestination

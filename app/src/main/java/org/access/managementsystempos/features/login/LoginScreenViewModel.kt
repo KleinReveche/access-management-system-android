@@ -7,12 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import org.access.managementsystempos.domain.models.Preference
 import org.access.managementsystempos.domain.models.PreferenceKey
 import org.access.managementsystempos.domain.models.ResponseType
-import org.access.managementsystempos.domain.models.db.Preference
 import org.access.managementsystempos.domain.repository.LocalRepository
 import org.access.managementsystempos.domain.repository.RemoteRepository
-import kotlin.uuid.ExperimentalUuidApi
+import org.access.managementsystempos.features.common.getProducts
 
 class LoginScreenViewModel(
     private val remoteRepository: RemoteRepository,
@@ -26,7 +26,6 @@ class LoginScreenViewModel(
     var loginError by mutableStateOf(false)
     var loginErrorMessage by mutableStateOf("")
 
-    @OptIn(ExperimentalUuidApi::class)
     fun login(onLoginSuccess: () -> Unit, onLoginFailure: () -> Unit) {
         if (username.isEmpty() || password.isEmpty()) return
         loginErrorMessage = ""
@@ -54,7 +53,7 @@ class LoginScreenViewModel(
                             username
                         )
                     )
-
+                    getProducts(remoteRepository, localRepository)
                     onLoginSuccess()
                 }
 

@@ -22,13 +22,13 @@ class KtorRepositoryImpl(
 
     override suspend fun getProducts(): Triple<Boolean, JsonResponse, JsonResponse> {
         val loginToken = localRepository.getPreference(PreferenceKey.LOGIN_TOKEN)!!.value
-        val productCategories = apiService.getProducts(loginToken)
+        val productCategories = apiService.getProductCategories(loginToken)
         val products = apiService.getProducts(loginToken)
 
         return if (products.responseType == ResponseType.ERROR || productCategories.responseType == ResponseType.ERROR) {
-            Triple(true, products, productCategories)
-        } else {
             Triple(false, products, productCategories)
+        } else {
+            Triple(true, products, productCategories)
         }
     }
 

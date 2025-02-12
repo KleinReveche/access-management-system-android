@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import org.access.managementsystempos.domain.models.db.Preference
+import org.access.managementsystempos.domain.models.Preference
 
 @Dao
 interface PreferenceDao {

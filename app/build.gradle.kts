@@ -22,11 +22,15 @@ android {
 
     buildTypes {
         release {
+            buildConfigField("String", "BASE_URL", "\"https://accessmanagementsystem.online/\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://dev.accessmanagementsystem.online/\"")
         }
     }
 
@@ -57,6 +61,7 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.navigation)
+    implementation(libs.androidx.ui.text.google.fonts)
 
     // coroutines
     implementation(libs.kotlinx.coroutines.core)
@@ -88,6 +93,9 @@ dependencies {
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.identikon)
+    implementation(libs.easyqrscan)
 
     testImplementation(libs.junit)
 

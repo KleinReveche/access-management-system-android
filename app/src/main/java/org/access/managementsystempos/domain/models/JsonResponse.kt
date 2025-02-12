@@ -23,5 +23,7 @@ enum class RequestType {
     LOGIN,
     LOGOUT,
     GET_PUBLIC_KEY,
-    GET_ROLE
+    GET_ROLE,
+    GET_PRODUCTS,
+    GET_PRODUCT_CATEGORIES,
 }
