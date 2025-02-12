@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "org.access.managementsystempos"
+    namespace = "org.access.managementsystem"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "org.access.managementsystempos"
+        applicationId = "org.access.managementsystem"
         minSdk = 27
         targetSdk = 35
         versionCode = 1
